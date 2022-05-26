@@ -1,0 +1,80 @@
+<template>
+  <div class="col-4">
+    <router-link
+      :to="{ name: 'product', params: { id: product.id } }"
+      class="card-link"
+    >
+      <b-card
+        :title="product.name"
+        :img-src="product.img"
+        :img-alt="product.name"
+        img-top
+        tag="article"
+        class="mb-4 shadow-lg"
+      >
+        <b-card-text>
+          {{ getCurrency(product.price) }}
+        </b-card-text>
+        <b-button
+          class="add-to-cart shadow"
+          href="#"
+          @click="goToProductView()"
+        >
+          Ver Producto
+        </b-button>
+      </b-card>
+    </router-link>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "ProductCard",
+  props: {
+    product: {},
+    sizes: [],
+  },
+  methods: {
+    goToProductView() {
+      this.$router.push(`/product/${this.product.id}`);
+    },
+  },
+};
+</script>
+
+<style scoped lang="less">
+.card-link {
+  .card {
+    &:hover {
+      opacity: 60%;
+    }
+
+    .card-body {
+      .card-title {
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 16px;
+        text-shadow: 2px 2px 8px #6c757d;
+        color: #6c757d;
+      }
+
+      .card-text {
+        color: #6c757d;
+      }
+
+      .add-to-cart {
+        background-color: #6c757d;
+        text-transform: uppercase;
+        border: none;
+
+        &:hover {
+          background-color: #d0dede;
+          font-weight: bold;
+          color: #6c757d;
+          border: none;
+        }
+      }
+    }
+  }
+}
+</style>
