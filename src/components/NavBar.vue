@@ -12,11 +12,30 @@
         <b-nav-item>
           <router-link class="button" to="/nosotros"> Nosotros</router-link>
         </b-nav-item>
-        <b-nav-item>
-          <a v-b-modal.login variant="outline-primary">
-            {{ isLoggedIn ? "Cerrar Sesión" : "Login" }}
-          </a>
+        <b-nav-item v-show="!isLoggedIn">
+          <a v-b-modal.login variant="outline-primary"> Login </a>
         </b-nav-item>
+        <b-nav-item-dropdown
+          v-show="isLoggedIn && !user.isAdmin"
+          id="user-dropdown"
+          text="user.name"
+          toggle-class="nav-link-custom"
+          right
+        >
+          <b-dropdown-item>Ordenes</b-dropdown-item>
+          <b-dropdown-item>Cerrar Sesión</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <b-nav-item-dropdown
+          v-show="isLoggedIn && user.isAdmin"
+          id="user-dropdown"
+          :text="user.name"
+          toggle-class="nav-link-custom"
+          right
+        >
+          <b-dropdown-item>Ordenes</b-dropdown-item>
+          <b-dropdown-item>Editar Productos</b-dropdown-item>
+          <b-dropdown-item>Cerrar Sesión</b-dropdown-item>
+        </b-nav-item-dropdown>
       </b-nav>
     </div>
     <b-button
@@ -37,7 +56,12 @@ export default {
       type: Number,
       default: 0,
     },
-    isLoggedIn: Boolean,
+    user: Object,
+  },
+  computed: {
+    isLoggedIn() {
+      return Object.keys(this.user).length !== 0;
+    },
   },
 };
 </script>

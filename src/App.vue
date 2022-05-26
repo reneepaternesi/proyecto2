@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <NavBar :itemsAdded="getItemsAdded()" :isLoggedIn="isLoggedIn" />
+    <NavBar :itemsAdded="getItemsAdded()" :user="user" />
     <router-view :products="products" @add-to-cart="addToCart" :sizes="sizes" />
     <CartModal :cart="cart" @remove-from-cart="removeFromCart" />
     <LoginModal
@@ -79,7 +79,7 @@ export default {
     },
     logIn(form) {
       this.user = this.users.find(
-        (user) => user.user === form.user && user.password === form.pass
+        (user) => user.user === form.user && user.password === form.password
       );
       if (!this.user) {
         this.hasAccount = false;

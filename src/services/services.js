@@ -17,9 +17,9 @@ export default {
     return await axios.get('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/users', userId)
   },
   async addUser (user) {
-    return await axios.post('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/user', user)
+    return await axios.post('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/users', user)
   },
   async addOrder (order) {
-    return await axios.post('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/order', order)
+    return await axios.post('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/orders', order)
   },
 }
