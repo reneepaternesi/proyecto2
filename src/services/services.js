@@ -22,4 +22,7 @@ export default {
   async addOrder (order) {
     return await axios.post('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/orders', order)
   },
+  async getOrders () {
+    return await axios.get('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/orders')
+  },
 }

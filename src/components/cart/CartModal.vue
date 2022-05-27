@@ -35,6 +35,9 @@ export default {
     removeFromCart(productId) {
       this.$emit("remove-from-cart", productId);
     },
+    createOrder() {
+      this.$emit("create-order", this.cart);
+    },
   },
 };
 </script>

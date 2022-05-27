@@ -1,8 +1,12 @@
 <template>
   <div id="app">
-    <NavBar :itemsAdded="getItemsAdded()" :user="user" />
+    <NavBar :itemsAdded="getItemsAdded()" :user="user" @log-out="logOut" />
     <router-view :products="products" @add-to-cart="addToCart" :sizes="sizes" />
-    <CartModal :cart="cart" @remove-from-cart="removeFromCart" />
+    <CartModal
+      :cart="cart"
+      @remove-from-cart="removeFromCart"
+      @create-order="createOrder"
+    />
     <LoginModal
       :isLoggedIn="isLoggedIn"
       :hasAccount="hasAccount"
@@ -23,6 +27,7 @@ export default {
   data: () => ({
     products: [],
     users: [],
+    orders: [],
     sizes: [
       { talle: 35, largo: 22.8 },
       { talle: 36, largo: 23.5 },
@@ -90,6 +95,7 @@ export default {
         });
       } else {
         this.hasAccount = true;
+        this.getOrders();
         this.$bvToast.toast("Success", {
           title: "Has ingresado a tu cuenta correctamente",
           variant: "success",
@@ -119,6 +125,10 @@ export default {
             noAutoHide: true,
           });
         });
+    },
+    logOut() {
+      this.user = {};
+      this.isLoggedIn = false;
     },
     addToCart(productId) {
       const productInCart = this.cart.find(
@@ -169,6 +179,52 @@ export default {
         return res + item.quantity;
       }, 0);
       return totalItems;
+    },
+    async createOrder(cart) {
+      const order = {
+        product: cart,
+        userId: this.user.id,
+      };
+      await Services.addOrder(order)
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          this.orders.push(data);
+          this.$bvToast.toast("Success", {
+            title:
+              "Tu orden ha sido creada correctamente. Ya estamos trabajando en ella!",
+            variant: "success",
+            solid: true,
+          });
+        })
+        .catch(() => {
+          this.$bvToast.toast("Error", {
+            title: `No pudimos crear tu orden, vuelve a intentarlo`,
+            variant: "danger",
+            solid: true,
+            noAutoHide: true,
+          });
+        });
+    },
+    async getOrders() {
+      await Services.getOrders()
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          this.orders = data.filter((order) => {
+            return (order.userId = this.user.id);
+          });
+        })
+        .catch(() => {
+          this.$bvToast.toast("Error", {
+            title: `No pudimos recuperar tu lista de ordenes, vuelve a intentarlo`,
+            variant: "danger",
+            solid: true,
+            noAutoHide: true,
+          });
+        });
     },
   },
 };
