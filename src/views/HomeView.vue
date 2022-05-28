@@ -7,6 +7,11 @@
         :product="product"
         @add-to-cart="addToCart"
       />
+      <ProductCard
+        v-show="isAdmin"
+        :product="newProduct"
+        @add-to-cart="addProduct"
+      />
     </b-row>
   </b-container>
 </template>
@@ -18,13 +23,28 @@ export default {
   name: "HomeView",
   props: {
     products: [],
+    isAdmin: Boolean,
   },
+  data: () => ({
+    newProduct: {
+      name: "Nombre del Producto",
+      price: 0,
+      stock: 0,
+      description: "Descripción del Producto",
+      quantity: 0,
+      size: 35,
+      img: "https://i.imgur.com/4lw1ETN.png",
+    },
+  }),
   components: {
     ProductCard,
   },
   methods: {
     addToCart(id) {
       this.$emit("add-to-cart", id);
+    },
+    addProduct() {
+      this.$emit("add-product", this.newProduct);
     },
   },
 };

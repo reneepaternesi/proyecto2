@@ -200,10 +200,10 @@
           <b-form-group
             id="input-user-group"
             label="Usuario:"
-            label-for="input-user"
+            label-for="input-user-login"
           >
             <b-form-input
-              id="input-user"
+              id="input-user-login"
               v-model="form.user"
               placeholder="Usuario"
               required
@@ -225,10 +225,10 @@
           <b-form-group
             id="input-last-pass-group"
             label="Contraseña:"
-            label-for="input-pass-name"
+            label-for="input-pass-name-login"
           >
             <b-form-input
-              id="input-pass-name"
+              id="input-pass-name-login"
               v-model="form.password"
               placeholder="Contraseña"
               required

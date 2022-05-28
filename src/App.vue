@@ -7,6 +7,9 @@
       :sizes="sizes"
       :isAdmin="user.isAdmin"
       :orders="orders"
+      @get-orders="getOrders"
+      @update-product="updateProduct"
+      @add-product="addProduct"
     />
     <CartModal
       :cart="cart"
@@ -100,12 +103,14 @@ export default {
         });
       } else {
         this.hasAccount = true;
-        this.getOrders();
         this.$bvToast.toast("Success", {
           title: "Has ingresado a tu cuenta correctamente",
           variant: "success",
           solid: true,
         });
+        if (this.$route.name !== "home") {
+          this.$router.push("/");
+        }
       }
     },
     async createAccount(form) {
@@ -196,9 +201,14 @@ export default {
     },
     async createOrder(cart) {
       const order = {
-        product: cart,
+        products: cart,
         userId: this.user.id,
         date: new Date(),
+        total: cart.reduce(
+          (accumulator, current) =>
+            accumulator + current.price * current.quantity,
+          0
+        ),
       };
       try {
         await apiServices.saveOrder(order);
@@ -208,6 +218,8 @@ export default {
           variant: "success",
           solid: true,
         });
+        this.cart = [];
+        localStorage.removeItem("cart");
       } catch (err) {
         console.log(err);
         this.$bvToast.toast("Error", {
@@ -225,6 +237,45 @@ export default {
         console.log(err);
         this.$bvToast.toast("Error", {
           title: `No pudimos recuperar tu lista de ordenes, vuelve a intentarlo`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
+        });
+      }
+    },
+    async updateProduct(product) {
+      const productUpdated = this.products.find((p) => p.id === product.id);
+      const index = this.products.indexOf(productUpdated);
+      try {
+        this.products[index] = await apiServices.updateProduct(product);
+        this.$bvToast.toast("Success", {
+          title: "El producto ha sido actualizado correctamente",
+          variant: "success",
+          solid: true,
+        });
+      } catch (err) {
+        console.log(err);
+        this.$bvToast.toast("Error", {
+          title: `No pudimos actualizar el producto, vuelve a intentarlo`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
+        });
+      }
+    },
+    async addProduct(product) {
+      try {
+        const newProduct = await apiServices.saveProduct(product);
+        this.products.push(newProduct);
+        this.$bvToast.toast("Success", {
+          title: "El producto ha sido creado correctamente",
+          variant: "success",
+          solid: true,
+        });
+      } catch (err) {
+        console.log(err);
+        this.$bvToast.toast("Error", {
+          title: `No pudimos guardar el nuevo producto, vuelve a intentarlo`,
           variant: "danger",
           solid: true,
           noAutoHide: true,
@@ -319,5 +370,15 @@ export default {
       }
     }
   }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 </style>

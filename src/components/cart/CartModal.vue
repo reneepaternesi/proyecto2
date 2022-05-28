@@ -5,10 +5,11 @@
     no-close-on-esc
     no-close-on-backdrop
     hide-header-close
+    ref="cart-modal"
   >
     <TableComponent :cart="cart" @remove-from-cart="removeFromCart" />
-    <template #modal-footer="{ ok, cancel }">
-      <b-button size="sm" variant="success" @click="ok()">
+    <template #modal-footer="{ cancel }">
+      <b-button size="sm" variant="success" @click="createOrder()">
         Confirmar Compra
       </b-button>
       <b-button size="sm" variant="secondary" @click="cancel()">
@@ -37,6 +38,7 @@ export default {
     },
     createOrder() {
       this.$emit("create-order", this.cart);
+      this.$refs["cart-modal"].hide();
     },
   },
 };

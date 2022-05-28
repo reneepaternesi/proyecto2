@@ -38,7 +38,7 @@
       volutpat, efficitur purus in, lobortis orci. Duis sem eros, euismod quis
       consectetur et, eleifend non lorem. Mauris iaculis luctus bibendum.
     </p>
-    <b-button class="back shadow" href="#" @click="addToCart">
+    <b-button class="back shadow" href="#">
       <router-link class="button" to="/"> Volver</router-link></b-button
     >
   </div>

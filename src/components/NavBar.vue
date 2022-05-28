@@ -41,7 +41,6 @@
               Mis Órdenes</router-link
             ></b-dropdown-item
           >
-          <b-dropdown-item>Editar Productos</b-dropdown-item>
           <b-dropdown-item @click="logOut()">Cerrar Sesión</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-nav>
@@ -130,6 +129,22 @@ export default {
 
     .nav-link.disabled {
       color: #6c757d;
+    }
+  }
+
+  .dropdown-item a {
+    color: #212529;
+  }
+
+  .nav-item .nav-link.dropdown-toggle,
+  .nav-pills .nav-link.active,
+  .nav-pills .show > .nav-link {
+    background-color: #bebebe;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: #bebebe;
     }
   }
 }

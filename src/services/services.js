@@ -14,6 +14,11 @@ const apiServices = {
     return res.data;
   },
 
+  updateProduct: async (product) => {
+    const res = await axios.put(apiUrl +  `/products/${product.id} `, product);
+    return res.data;
+  },
+
   getUsers: async () => {
     const res = await axios.get(apiUrl + '/users');
     return res.data;
