@@ -18,11 +18,15 @@
         <b-nav-item-dropdown
           v-show="isLoggedIn && !user.isAdmin"
           id="user-dropdown"
-          text="user.name"
+          :text="user.name"
           toggle-class="nav-link-custom"
           right
         >
-          <b-dropdown-item>Mis Ordenes</b-dropdown-item>
+          <b-dropdown-item
+            ><router-link class="button" to="/orders">
+              Mis Órdenes</router-link
+            ></b-dropdown-item
+          >
           <b-dropdown-item @click="logOut()">Cerrar Sesión</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-nav-item-dropdown
@@ -32,7 +36,11 @@
           toggle-class="nav-link-custom"
           right
         >
-          <b-dropdown-item>Mis Ordenes</b-dropdown-item>
+          <b-dropdown-item
+            ><router-link class="button" to="/orders">
+              Mis Órdenes</router-link
+            ></b-dropdown-item
+          >
           <b-dropdown-item>Editar Productos</b-dropdown-item>
           <b-dropdown-item @click="logOut()">Cerrar Sesión</b-dropdown-item>
         </b-nav-item-dropdown>

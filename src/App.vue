@@ -1,7 +1,13 @@
 <template>
   <div id="app">
     <NavBar :itemsAdded="getItemsAdded()" :user="user" @log-out="logOut" />
-    <router-view :products="products" @add-to-cart="addToCart" :sizes="sizes" />
+    <router-view
+      :products="products"
+      @add-to-cart="addToCart"
+      :sizes="sizes"
+      :isAdmin="user.isAdmin"
+      :orders="orders"
+    />
     <CartModal
       :cart="cart"
       @remove-from-cart="removeFromCart"
@@ -17,8 +23,8 @@
 </template>
 
 <script>
+import apiServices from "./services/services";
 import NavBar from "./components/NavBar.vue";
-import Services from "./services/services";
 import CartModal from "./components/cart/CartModal.vue";
 import LoginModal from "./components/LoginModal.vue";
 
@@ -46,43 +52,42 @@ export default {
   mounted() {
     this.getProducts();
     this.getUsers();
+    this.getCart();
   },
   methods: {
     async getProducts() {
-      await Services.getProducts()
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          this.products = data;
-        })
-        .catch(() => {
-          this.$bvToast.toast("Error", {
-            title: `No pudimos recuperar la lista de productos, vuelve a intentarlo`,
-            variant: "danger",
-            solid: true,
-            noAutoHide: true,
-          });
+      try {
+        this.products = await apiServices.getProducts();
+      } catch (err) {
+        console.log(err);
+        this.$bvToast.toast("Error", {
+          title: `No pudimos recuperar la lista de productos, vuelve a intentarlo`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
         });
+      }
     },
     async getUsers() {
-      await Services.getUsers()
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          this.users = data;
-        })
-        .catch(() => {
-          this.$bvToast.toast("Error", {
-            title: `No pudimos recuperar la lista de usuarios, vuelve a intentarlo`,
-            variant: "danger",
-            solid: true,
-            noAutoHide: true,
-          });
+      try {
+        this.users = await apiServices.getUsers();
+      } catch (err) {
+        console.log(err);
+        this.$bvToast.toast("Error", {
+          title: `No pudimos recuperar la lista de usuarios, vuelve a intentarlo`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
         });
+      }
+    },
+    getCart() {
+      this.cart = JSON.parse(localStorage.getItem("cart")) || [];
     },
     logIn(form) {
+      this.user = {};
+      this.isLoggedIn = false;
+      this.hasAccount = false;
       this.user = this.users.find(
         (user) => user.user === form.user && user.password === form.password
       );
@@ -104,35 +109,43 @@ export default {
       }
     },
     async createAccount(form) {
-      await Services.addUser(form)
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          this.user = data;
-          this.hasAccount = true;
-          this.$bvToast.toast("Success", {
-            title: "Hemos creado tu cuenta correctamente",
-            variant: "success",
-            solid: true,
-          });
-        })
-        .catch(() => {
-          this.$bvToast.toast("Error", {
-            title: `No pudimos crear tu cuenta, vuelve a intentarlo`,
-            variant: "danger",
-            solid: true,
-            noAutoHide: true,
-          });
+      const userName = this.users.find((user) => user.user === form.user);
+
+      if (userName) {
+        this.$bvToast.toast("Error", {
+          title: `Ya existe un usuario con ese nombre`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
         });
+        return;
+      }
+
+      try {
+        this.user = await apiServices.saveUser(form);
+        this.hasAccount = true;
+        this.$bvToast.toast("Success", {
+          title: "Hemos creado tu cuenta correctamente",
+          variant: "success",
+          solid: true,
+        });
+      } catch (err) {
+        console.log(err);
+        this.$bvToast.toast("Error", {
+          title: `No pudimos crear tu cuenta, vuelve a intentarlo`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
+        });
+      }
     },
     logOut() {
       this.user = {};
       this.isLoggedIn = false;
     },
-    addToCart(productId) {
+    addToCart(productToCart) {
       const productInCart = this.cart.find(
-        (product) => product.id === productId
+        (product) => product.id === productToCart.id
       );
 
       if (productInCart) {
@@ -148,7 +161,7 @@ export default {
         }
       } else {
         const newProduct = this.products.find(
-          (product) => product.id === productId
+          (product) => product.id === productToCart.id
         );
 
         this.cart.push({
@@ -161,6 +174,7 @@ export default {
         variant: "success",
         solid: true,
       });
+      localStorage.setItem("cart", JSON.stringify(this.cart));
     },
     removeFromCart(productId) {
       const productInCart = this.cart.find(
@@ -184,47 +198,38 @@ export default {
       const order = {
         product: cart,
         userId: this.user.id,
+        date: new Date(),
       };
-      await Services.addOrder(order)
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          this.orders.push(data);
-          this.$bvToast.toast("Success", {
-            title:
-              "Tu orden ha sido creada correctamente. Ya estamos trabajando en ella!",
-            variant: "success",
-            solid: true,
-          });
-        })
-        .catch(() => {
-          this.$bvToast.toast("Error", {
-            title: `No pudimos crear tu orden, vuelve a intentarlo`,
-            variant: "danger",
-            solid: true,
-            noAutoHide: true,
-          });
+      try {
+        await apiServices.saveOrder(order);
+        this.$bvToast.toast("Success", {
+          title:
+            "Tu orden ha sido creada correctamente. Ya estamos trabajando en ella!",
+          variant: "success",
+          solid: true,
         });
+      } catch (err) {
+        console.log(err);
+        this.$bvToast.toast("Error", {
+          title: `No pudimos crear tu orden, vuelve a intentarlo`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
+        });
+      }
     },
     async getOrders() {
-      await Services.getOrders()
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          this.orders = data.filter((order) => {
-            return (order.userId = this.user.id);
-          });
-        })
-        .catch(() => {
-          this.$bvToast.toast("Error", {
-            title: `No pudimos recuperar tu lista de ordenes, vuelve a intentarlo`,
-            variant: "danger",
-            solid: true,
-            noAutoHide: true,
-          });
+      try {
+        this.orders = await apiServices.getOrders(this.user.id);
+      } catch (err) {
+        console.log(err);
+        this.$bvToast.toast("Error", {
+          title: `No pudimos recuperar tu lista de ordenes, vuelve a intentarlo`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
         });
+      }
     },
   },
 };

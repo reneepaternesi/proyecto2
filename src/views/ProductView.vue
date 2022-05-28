@@ -2,22 +2,24 @@
   <b-container class="product-layout p-5">
     <b-row class="justify-content-center">
       <div class="col-6">
-        <img class="w-100" :src="product.img" />
+        <img class="w-100" :src="productToCart.img" />
       </div>
       <div class="col-6">
-        <h1 class="title">{{ product.name }}</h1>
-        <p class="description">{{ product.description }}</p>
+        <h1 class="title">{{ productToCart.name }}</h1>
+        <p class="description">{{ productToCart.description }}</p>
         <p class="text-left">
-          <strong>Cantidad Disponible: </strong>{{ product.stock }}
+          <strong>Cantidad Disponible: </strong>{{ productToCart.stock }}
         </p>
         <b-row>
           <div class="col-6">
             <b-table striped hover :items="sizes"></b-table>
           </div>
           <div class="col-6">
-            <div class="price">Precio: {{ getCurrency(product.price) }}</div>
+            <div class="price">
+              Precio: {{ getCurrency(productToCart.price) }}
+            </div>
             <b-form-select
-              v-model="product.size"
+              v-model="productToCart.size"
               :options="getSizes(sizes)"
               class="sizes"
               required
@@ -30,7 +32,8 @@
               :disabled="!validPurchase()"
               @click="addToCart"
               >{{
-                product.stock === 0 || product.quantity === product.stock
+                productToCart.stock === 0 ||
+                productToCart.quantity === productToCart.stock
                   ? "No Disponible"
                   : "Comprar"
               }}</b-button
@@ -46,30 +49,28 @@
 export default {
   name: "ProductView",
   props: {
-    products: [],
+    id: String,
+    product: {},
     sizes: [],
   },
   data: () => ({
-    productId: 0,
-    product: {},
+    productToCart: {},
   }),
   methods: {
     validPurchase() {
       return (
-        this.product.stock > 0 && this.product.quantity < this.product.stock
+        this.productToCart.stock > 0 &&
+        this.productToCart.quantity < this.productToCart.stock
       );
     },
     addToCart() {
-      this.$emit("add-to-cart", this.product.id);
+      this.$emit("add-to-cart", this.productToCart);
     },
   },
   mounted() {
-    this.productId = this.$route.params.id;
-    this.product = this.products.find(
-      (product) => product.id === this.productId
-    );
-    this.product.size = 35;
-    this.product.quantity = 0;
+    this.productToCart = this.product;
+    this.productToCart.size = 35;
+    this.productToCart.quantity = 0;
   },
 };
 </script>

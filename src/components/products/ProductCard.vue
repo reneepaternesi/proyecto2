@@ -1,7 +1,7 @@
 <template>
   <div class="col-4">
     <router-link
-      :to="{ name: 'product', params: { id: product.id } }"
+      :to="{ name: 'product', params: { id: product.id, product } }"
       class="card-link"
     >
       <b-card
@@ -32,7 +32,6 @@ export default {
   name: "ProductCard",
   props: {
     product: {},
-    sizes: [],
   },
   methods: {
     goToProductView() {

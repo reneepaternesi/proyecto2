@@ -286,6 +286,7 @@ export default {
         address: "",
         user: "",
         password: "",
+        isAdmin: false,
       },
       provinces: [
         { text: "Seleccione una provincia", value: null },

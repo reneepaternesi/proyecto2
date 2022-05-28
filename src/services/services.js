@@ -1,28 +1,38 @@
 import axios from 'axios'
 
-export default {
-  async getProducts () {
-    return await axios.get('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/products')
+const apiUrl = 'https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes';
+
+const apiServices = {
+
+  getProducts: async () => {
+    const res = await axios.get(apiUrl + '/products');
+    return res.data;
   },
-  async getProduct (productId) {
-    return await axios.get('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/products', productId)
+
+  saveProduct: async (product) => {
+    const res = await axios.post(apiUrl + '/products', product);
+    return res.data;
   },
-  async addProduct (product) {
-    return await axios.post('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/product', product)
+
+  getUsers: async () => {
+    const res = await axios.get(apiUrl + '/users');
+    return res.data;
   },
-  async getUsers () {
-    return await axios.get('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/users')
+
+  saveUser: async (user) => {
+    const res = await axios.post(apiUrl + '/users', user);
+    return res.data;
   },
-  async getUser (userId) {
-    return await axios.get('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/users', userId)
+
+  getOrders: async (userId) => {
+    const res = await axios.get(apiUrl + `/users/${userId}/orders`);
+    return res.data;
   },
-  async addUser (user) {
-    return await axios.post('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/users', user)
-  },
-  async addOrder (order) {
-    return await axios.post('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/orders', order)
-  },
-  async getOrders () {
-    return await axios.get('https://628e6ce6a339dfef87adf203.mockapi.io/reneeshoes/orders')
+
+  saveOrder: async (order) => {
+    const res = await axios.post(apiUrl + `/users/${order.userId}/orders`, order);
+    return res.data;
   },
 }
+
+export default apiServices
