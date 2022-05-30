@@ -20,7 +20,7 @@ const routes = [
     component: AboutView
   },
   {
-    path: '/product/:id',
+    path: '/product/:id?',
     name: 'product',
     component: ProductView,
     props: true

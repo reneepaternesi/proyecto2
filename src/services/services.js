@@ -15,8 +15,12 @@ const apiServices = {
   },
 
   updateProduct: async (product) => {
-    const res = await axios.put(apiUrl +  `/products/${product.id} `, product);
+    const res = await axios.put(apiUrl +  `/products/${product.id}`, product);
     return res.data;
+  },
+
+  deleteProduct: async (productId) => {
+    await axios.delete(apiUrl + `/products/${productId}`);
   },
 
   getUsers: async () => {

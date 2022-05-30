@@ -5,7 +5,8 @@
         v-for="product in products"
         :key="product.id"
         :product="product"
-        @add-to-cart="addToCart"
+        @delete-product="deleteProduct"
+        :isAdmin="isAdmin"
       />
       <ProductCard
         v-show="isAdmin"
@@ -40,11 +41,11 @@ export default {
     ProductCard,
   },
   methods: {
-    addToCart(id) {
-      this.$emit("add-to-cart", id);
-    },
     addProduct() {
       this.$emit("add-product", this.newProduct);
+    },
+    deleteProduct(id) {
+      this.$emit("delete-product", id);
     },
   },
 };

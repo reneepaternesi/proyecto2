@@ -15,12 +15,19 @@
         <b-card-text>
           {{ getCurrency(product.price) }}
         </b-card-text>
-        <b-button
-          class="add-to-cart shadow"
-          href="#"
-          @click="goToProductView()"
+        <router-link
+          class="btn shadow add-to-cart"
+          :to="{ name: 'product', params: { id: product.id, product } }"
         >
           Ver Producto
+        </router-link>
+        <b-button
+          v-show="isAdmin"
+          class="add-to-cart shadow"
+          href="#"
+          @click="deleteProduct(product.id)"
+        >
+          Eliminar Producto
         </b-button>
       </b-card>
     </router-link>
@@ -32,10 +39,11 @@ export default {
   name: "ProductCard",
   props: {
     product: {},
+    isAdmin: Boolean,
   },
   methods: {
-    goToProductView() {
-      this.$router.push(`/product/${this.product.id}`);
+    deleteProduct(id) {
+      this.$emit("delete-product", id);
     },
   },
 };
@@ -44,8 +52,10 @@ export default {
 <style scoped lang="less">
 .card-link {
   .card {
-    &:hover {
-      opacity: 60%;
+    img {
+      &:hover {
+        opacity: 60%;
+      }
     }
 
     .card-body {
@@ -65,6 +75,7 @@ export default {
         background-color: #6c757d;
         text-transform: uppercase;
         border: none;
+        color: white;
 
         &:hover {
           background-color: #d0dede;
@@ -72,6 +83,10 @@ export default {
           color: #6c757d;
           border: none;
         }
+      }
+
+      .add-to-cart + .add-to-cart {
+        margin-left: 10px;
       }
     }
   }

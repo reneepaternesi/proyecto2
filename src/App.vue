@@ -10,6 +10,7 @@
       @get-orders="getOrders"
       @update-product="updateProduct"
       @add-product="addProduct"
+      @delete-product="deleteProduct"
     />
     <CartModal
       :cart="cart"
@@ -103,6 +104,7 @@ export default {
         });
       } else {
         this.hasAccount = true;
+        this.isLoggedIn = true;
         this.$bvToast.toast("Success", {
           title: "Has ingresado a tu cuenta correctamente",
           variant: "success",
@@ -129,11 +131,13 @@ export default {
       try {
         this.user = await apiServices.saveUser(form);
         this.hasAccount = true;
+        this.isLoggedIn = true;
         this.$bvToast.toast("Success", {
           title: "Hemos creado tu cuenta correctamente",
           variant: "success",
           solid: true,
         });
+        this.getUsers();
       } catch (err) {
         console.log(err);
         this.$bvToast.toast("Error", {
@@ -147,6 +151,9 @@ export default {
     logOut() {
       this.user = {};
       this.isLoggedIn = false;
+      if (this.$route.name !== "home") {
+        this.$router.push("/");
+      }
     },
     addToCart(productToCart) {
       const productInCart = this.cart.find(
@@ -276,6 +283,30 @@ export default {
         console.log(err);
         this.$bvToast.toast("Error", {
           title: `No pudimos guardar el nuevo producto, vuelve a intentarlo`,
+          variant: "danger",
+          solid: true,
+          noAutoHide: true,
+        });
+      }
+    },
+    async deleteProduct(productId) {
+      try {
+        await apiServices.deleteProduct(productId);
+        this.products.splice(
+          this.products.findIndex(function (p) {
+            return p.id === productId;
+          }),
+          1
+        );
+        this.$bvToast.toast("Success", {
+          title: "El producto ha sido eliminado correctamente",
+          variant: "success",
+          solid: true,
+        });
+      } catch (err) {
+        console.log(err);
+        this.$bvToast.toast("Error", {
+          title: `No pudimos eliminar el producto, vuelve a intentarlo`,
           variant: "danger",
           solid: true,
           noAutoHide: true,
